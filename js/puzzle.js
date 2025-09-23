@@ -30,7 +30,19 @@ class PuzzleGame {
         const img = new Image();
         img.src = this.imagePath;
         await new Promise(resolve => {
-            img.onload = resolve;
+            img.onload = () => {
+                // Pastikan gambar memiliki dimensi yang valid sebelum melanjutkan
+                if (img.naturalWidth > 0 && img.naturalHeight > 0) {
+                    resolve();
+                } else {
+                    console.error('Failed to load image or image has invalid dimensions:', this.imagePath);
+                    // Handle error, mungkin dengan menampilkan pesan atau gambar placeholder
+                }
+            };
+            img.onerror = () => {
+                console.error('Error loading image:', this.imagePath);
+                // Handle error
+            };
         });
 
         const numTiles = this.gridSize * this.gridSize;
@@ -46,7 +58,8 @@ class PuzzleGame {
 
     createTiles(image) {
         this.puzzleBoardElement.style.gridTemplateColumns = `repeat(${this.gridSize}, 1fr)`;
-        const tileSize = image.width / this.gridSize;
+        this.puzzleBoardElement.style.width = `${image.width}px`; // Set board width
+        this.puzzleBoardElement.style.height = `${image.height}px`; // Set board height
 
         this.tiles.forEach((tileValue, index) => {
             const tile = document.createElement('div');
@@ -138,6 +151,7 @@ class PuzzleGame {
             if (this.checkWin()) {
                 this.stopTimer();
                 this.isGameActive = false;
+                // Panggil showPopup dari ui.js
                 showPopup(`Selamat! Anda berhasil menyelesaikan puzzle dalam ${formatTime(this.timer)} dengan ${this.moves} gerakan!`, this.level, this.moves, this.timer);
             }
         }
@@ -159,29 +173,34 @@ class PuzzleGame {
         // Swap values in the internal tiles array
         [this.tiles[clickedIndex], this.tiles[emptyIndex]] = [this.tiles[emptyIndex], this.tiles[clickedIndex]];
 
-        // Update DOM elements
+        // Update DOM elements (visually swap their content/styles)
         const clickedElement = this.board[clickedIndex];
         const emptyElement = this.board[emptyIndex];
 
-        // Animate the move (optional, can be done with CSS transitions)
+        // Temporarily store properties of the clicked element
         const tempInnerHTML = clickedElement.innerHTML;
-        const tempClasses = clickedElement.classList;
+        const tempClasses = clickedElement.className; // Use className to get all classes
         const tempStyle = clickedElement.style.cssText;
+        const tempDatasetValue = clickedElement.dataset.value;
 
+
+        // Copy properties from emptyElement to clickedElement's new position
         clickedElement.innerHTML = emptyElement.innerHTML;
         clickedElement.className = emptyElement.className;
         clickedElement.style.cssText = emptyElement.style.cssText;
-        clickedElement.dataset.value = emptyElement.dataset.value;
+        clickedElement.dataset.value = emptyElement.dataset.value; // Now clickedElement is empty
 
+
+        // Copy stored properties from original clickedElement to emptyElement's new position
         emptyElement.innerHTML = tempInnerHTML;
         emptyElement.className = tempClasses;
         emptyElement.style.cssText = tempStyle;
-        emptyElement.dataset.value = clickedElement.dataset.value; // Update dataset for empty tile
+        emptyElement.dataset.value = tempDatasetValue; // Now emptyElement has content
+
 
         // Visually swap classes for empty tile
         clickedElement.classList.remove('empty-tile');
         emptyElement.classList.add('empty-tile');
-        emptyElement.dataset.value = this.emptyTileIndex;
         emptyElement.textContent = ''; // Pastikan kosong
     }
 
@@ -208,3 +227,77 @@ class PuzzleGame {
             clearInterval(this.intervalId);
             this.intervalId = null;
         }
+    }
+
+    updateUI() {
+        if (this.moveCountElement) {
+            this.moveCountElement.textContent = this.moves;
+        }
+        if (this.timerElement) {
+            this.timerElement.textContent = formatTime(this.timer);
+        }
+
+        // Update tile positions
+        this.board.forEach((tileElement, index) => {
+            const tileValue = this.tiles[index]; // Get the value that should be at this position
+            const originalTile = this.board.find(t => parseInt(t.dataset.value) === tileValue);
+
+            if (originalTile) {
+                // Ensure originalTile is not the current element
+                if (originalTile !== tileElement) {
+                    // Temporarily store current element's properties
+                    const currentInnerHTML = tileElement.innerHTML;
+                    const currentClassName = tileElement.className;
+                    const currentStyle = tileElement.style.cssText;
+                    const currentDatasetValue = tileElement.dataset.value;
+
+                    // Copy properties from the actual tile to its new display position
+                    tileElement.innerHTML = originalTile.innerHTML;
+                    tileElement.className = originalTile.className;
+                    tileElement.style.cssText = originalTile.style.cssText;
+                    tileElement.dataset.value = originalTile.dataset.value;
+
+                    // Restore properties for the originalTile (now at the other position)
+                    originalTile.innerHTML = currentInnerHTML;
+                    originalTile.className = currentClassName;
+                    originalTile.style.cssText = currentStyle;
+                    originalTile.dataset.value = currentDatasetValue;
+                }
+            }
+
+            // Reapply empty tile class based on current internal state
+            if (tileValue === this.emptyTileIndex) {
+                tileElement.classList.add('empty-tile');
+                tileElement.textContent = '';
+            } else {
+                tileElement.classList.remove('empty-tile');
+            }
+        });
+    }
+
+
+    async submitScoreAndClosePopup() {
+        const playerNameInput = document.getElementById('player-name');
+        const playerName = playerNameInput ? playerNameInput.value.trim() : 'Anonim';
+
+        if (playerName) {
+            await addScoreToLeaderboard(this.level, playerName, this.moves, this.timer);
+            closePopup();
+            // Setelah menyimpan, reset game atau kembali ke menu
+            // this.reset(); // Bisa diaktifkan jika ingin otomatis reset
+        } else {
+            alert('Nama pemain tidak boleh kosong!');
+        }
+    }
+
+    reset() {
+        this.stopTimer();
+        this.moves = 0;
+        this.timer = 0;
+        this.isGameActive = false;
+        this.hasStarted = false;
+        this.puzzleBoardElement.innerHTML = ''; // Kosongkan papan
+        this.initGame(); // Inisialisasi ulang game
+        this.updateUI(); // Perbarui UI setelah reset
+    }
+}
