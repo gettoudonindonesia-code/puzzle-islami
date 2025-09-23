@@ -164,7 +164,6 @@ p {
     align-items: flex-start; /* Mengatur ke atas */
     padding: 20px 0;
     box-sizing: border-box;
-    background-image: url('assets/images/background/game-bg.png'); /* Latar belakang game */
     background-size: cover;
     background-position: center;
     background-attachment: fixed;
