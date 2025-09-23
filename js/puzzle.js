@@ -99,21 +99,22 @@ class PuzzleGame {
 
     handleTileClick(event) {
         const clickedTile = event.target.closest('.puzzle-tile');
-        if (!clickedTile || clickedTile.classList.contains('empty-tile') || !this.isGameActive) {
+        if (!clickedTile || !this.isGameActive) {
             return;
         }
 
         if (!this.hasStarted) {
             this.startTimer();
             this.hasStarted = true;
-            this.isGameActive = true; // Pastikan game aktif saat klik pertama
+            this.isGameActive = true; 
         }
 
           const clickedIndex = this.board.indexOf(clickedTile);
-          clickedTile.classList.add('selected'); // Tandai potongan yang diklik
 
           if (!this.firstClick) {
-        this.firstClick = { tile: clickedTile, index: clickedIndex };
+            // Tandai potongan yang diklik
+             clickedTile.classList.add('selected');
+             this.firstClick = { tile: clickedTile, index: clickedIndex };
     } else {
         this.secondClick = { tile: clickedTile, index: clickedIndex };
         this.swapTiles(this.firstClick.index, this.secondClick.index);
