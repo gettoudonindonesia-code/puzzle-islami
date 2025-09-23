@@ -58,18 +58,12 @@ class PuzzleGame {
 
     createTiles(image) {
         this.puzzleBoardElement.style.gridTemplateColumns = `repeat(${this.gridSize}, 1fr)`;
-        this.puzzleBoardElement.style.width = `${image.width}px`; // Set board width
-        this.puzzleBoardElement.style.height = `${image.height}px`; // Set board height
 
         this.tiles.forEach((tileValue, index) => {
             const tile = document.createElement('div');
             tile.classList.add('puzzle-tile');
             tile.dataset.value = tileValue;
 
-            if (tileValue === this.emptyTileIndex) {
-                tile.classList.add('empty-tile');
-                tile.textContent = ''; // Atau ikon kosong
-            } else {
                 const row = Math.floor(tileValue / this.gridSize);
                 const col = tileValue % this.gridSize;
                 tile.style.backgroundImage = `url('${this.imagePath}')`;

@@ -222,10 +222,10 @@ p {
 .puzzle-board.pro { grid-template-columns: repeat(4, 1fr); }
 
 /* Aturan untuk setiap potongan puzzle */
-.puzzle-piece {
+.puzzle-piece img {
     width: 100%;
     height: 100%;
-    /* Aturan lain untuk potongan puzzle bisa ditambahkan di sini */
+    object-fit: cover; /* Penting untuk memastikan gambar mengisi penuh tanpa distorsi */
 }
 
 .puzzle-tile {
