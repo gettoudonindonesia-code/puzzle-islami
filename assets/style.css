@@ -448,3 +448,13 @@ p {
         font-size: 1em;
     }
 }
+
+/* --- Tombol Lanjut (Next) di Pop-up --- */
+.game-button.next-puzzle-button {
+    background: linear-gradient(45deg, var(--secondary-color), #8bc34a); /* Warna hijau */
+    margin-top: 15px; /* Spasi dari tombol lain */
+}
+
+.game-button.next-puzzle-button:hover:before {
+    background: linear-gradient(45deg, #388e3c, #689f38); /* Warna hover hijau lebih gelap */
+}

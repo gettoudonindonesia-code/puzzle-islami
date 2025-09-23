@@ -10,8 +10,7 @@
 <body>
     <div class="game-wrapper">
         <div class="container game-page-container">
-            <h1>Easy Level (2x2)</h1>
-            <div class="game-info">
+            <h1>Easy Level (2x2)</h1> <div class="game-info">
                 <p>Gerakan: <span id="move-count">0</span></p>
                 <p>Waktu: <span id="timer">00:00</span></p>
                 <button id="skip-button" class="game-button skip-button">Lewati</button>
@@ -25,7 +24,7 @@
                 </div>
             </div>
 
-            <div id="puzzle-board" class="puzzle-board easy"></div>
+            <div id="puzzle-board" class="puzzle-board easy"></div> <button id="next-button" class="game-button next-puzzle-button">Lanjut Puzzle</button>
 
             <a href="index.html" class="game-button back-button">Kembali ke Menu</a>
         </div>
@@ -36,14 +35,14 @@
             </div>
     </div>
 
+    <script src="js/leaderboard.js"></script> <script src="js/ui.js"></script>
     <script src="js/puzzle.js"></script>
-    <script src="js/ui.js"></script>
     <script>
         let currentGame; // Deklarasikan sebagai variabel global
 
         document.addEventListener("DOMContentLoaded", () => {
             // Inisialisasi PuzzleGame dengan level dan ukuran grid yang sesuai
-            currentGame = new PuzzleGame("easy", 2); 
+            currentGame = new PuzzleGame("easy", 2); // Sesuaikan level dan gridSize
         });
 
         function resetGame() {
@@ -51,6 +50,9 @@
                 currentGame.reset();
             }
         }
+
+        // Fungsi submitScore tidak lagi diperlukan di sini karena ditangani di ui.js
+        // function submitScore() { ... }
     </script>
 </body>
 </html>
