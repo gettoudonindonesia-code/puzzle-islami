@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title>Puzzle Islami</title>
+    <link rel="stylesheet" href="assets/style.css"/>
+    <link href="https://fonts.googleapis.com/css2?family=Amatic+SC:wght@400;700&family=Comfortaa:wght@400;700&display=swap" rel="stylesheet">
+</head>
+<body>
+    <div class="container menu-container">
+        <h1>✨ Puzzle Islami ✨</h1>
+        <p class="tagline">Uji ketangkasanmu dengan puzzle-puzzle seru!</p>
+        <div class="menu">
+            <a href="level-easy.html" class="menu-button">Level Mudah (2x2)</a>
+            <a href="level-middle.html" class="menu-button">Level Sedang (4x4)</a>
+            <a href="level-pro.html" class="menu-button">Level Sulit (6x6)</a>
+        </div>
+
+        <h2>🏆 Leaderboard Teratas 🏆</h2>
+        <div id="leaderboard">
+            <p>Memuat leaderboard...</p>
+        </div>
+    </div>
+
+    <script src="js/leaderboard.js"></script>
+    <script>
+        // Memuat leaderboard saat halaman dimuat
+        document.addEventListener("DOMContentLoaded", displayLeaderboard);
+    </script>
+</body>
+</html>

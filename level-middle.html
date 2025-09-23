@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title>Puzzle Islami - Middle</title>
+    <link rel="stylesheet" href="assets/style.css"/>
+    <link href="https://fonts.googleapis.com/css2?family=Amatic+SC:wght@400;700&family=Comfortaa:wght@400;700&display=swap" rel="stylesheet">
+</head>
+<body>
+    <div class="game-wrapper">
+        <div class="container game-page-container">
+            <h1>Level Sedang (4x4)</h1>
+            <div class="game-info">
+                <p>Gerakan: <span id="move-count">0</span></p>
+                <p>Waktu: <span id="timer">00:00</span></p>
+                <button onclick="resetGame()" class="game-button">Ulangi</button>
+                <a href="index.html" class="game-button back-button">Kembali ke Menu</a>
+            </div>
+            <div id="puzzle-board" class="puzzle-board middle"></div>
+        </div>
+    </div>
+
+    <div id="popup" class="popup">
+        <div class="popup-content">
+            <p id="popup-msg"></p>
+            <input type="text" id="player-name" placeholder="Masukkan Nama Anda" maxlength="15" />
+            <button onclick="submitScore()">Simpan Skor</button>
+        </div>
+    </div>
+
+    <script src="js/puzzle.js"></script>
+    <script src="js/ui.js"></script>
+    <script src="js/leaderboard.js"></script>
+    <script>
+        let currentGame; // Deklarasikan sebagai variabel global
+
+        document.addEventListener("DOMContentLoaded", async () => {
+            const puzzlesData = await fetch('data/puzzles.json').then(res => res.json());
+            const middlePuzzles = puzzlesData.middle;
+            const randomImageIndex = Math.floor(Math.random() * middlePuzzles.length);
+            const selectedImagePath = middlePuzzles[randomImageIndex].image;
+
+            currentGame = new PuzzleGame("middle", 4, selectedImagePath); // gridSize 4x4
+        });
+
+        function resetGame() {
+            if (currentGame) {
+                currentGame.reset();
+            }
+        }
+
+        function submitScore() {
+            if (currentGame) {
+                currentGame.submitScoreAndClosePopup();
+            }
+        }
+    </script>
+</body>
+</html>
