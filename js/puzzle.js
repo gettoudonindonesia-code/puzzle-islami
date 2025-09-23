@@ -1,8 +1,9 @@
 class PuzzleGame {
-    constructor(level, gridSize, imagePath) {
+    constructor(level, gridSize) {
         this.level = level;
         this.gridSize = gridSize;
-        this.imagePath = imagePath;
+        this.imagePaths = this.getImagesForLevel(level); // Daftar 20 gambar per level
+        this.imageIndex = 0; // Index gambar yang sedang dimainkan
         this.board = [];
         this.tiles = [];
         this.moves = 0;
@@ -10,14 +11,29 @@ class PuzzleGame {
         this.intervalId = null;
         this.isGameActive = false;
         this.hasStarted = false;
-        this.firstClick = null; // Tambahkan ini
-        this.secondClick = null; // Tambahkan ini
+        this.firstClick = null;
+        this.secondClick = null;
+        this.completedPuzzles = new Set(); // Menggunakan Set untuk menyimpan gambar yang sudah selesai
 
         this.puzzleBoardElement = document.getElementById('puzzle-board');
         this.moveCountElement = document.getElementById('move-count');
         this.timerElement = document.getElementById('timer');
+        this.progressTextElement = document.getElementById('progress-text');
+        this.progressBarElement = document.getElementById('progress-bar');
+        this.skipButton = document.getElementById('skip-button');
 
         this.initGame();
+        this.addEventListeners();
+    }
+
+    getImagesForLevel(level) {
+        // Asumsi folder assets berisi subfolder untuk setiap level (misal: easy, medium, hard)
+        // dan di dalamnya ada 20 gambar dengan nama 1.jpg, 2.jpg, dst.
+        const images = [];
+        for (let i = 1; i <= 20; i++) {
+            images.push(`assets/${level}/${i}.jpg`);
+        }
+        return images;
     }
 
     async initGame() {
@@ -31,6 +47,18 @@ class PuzzleGame {
         this.firstClick = null;
         this.secondClick = null;
 
+        let imageToPlay = this.getAvailableImage();
+        if (!imageToPlay) {
+            // Jika semua puzzle sudah selesai, bisa tampilkan pesan atau kembali ke menu
+            showPopup("Hebat! Kamu sudah menyelesaikan semua 20 puzzle di level ini!", this.level, null, null, () => {
+                // Contoh: Kembali ke menu utama
+                window.location.href = 'index.html'; 
+            });
+            return;
+        }
+
+        this.imagePath = imageToPlay;
+        
         const img = new Image();
         img.src = this.imagePath;
         await new Promise(resolve => {
@@ -51,50 +79,31 @@ class PuzzleGame {
 
         this.shuffleTiles();
         this.createTiles(img);
-        this.addEventListeners();
     }
-
-    createTiles(image) {
-        this.puzzleBoardElement.style.gridTemplateColumns = `repeat(${this.gridSize}, 1fr)`;
-        this.tiles.forEach((tileValue, index) => {
-            const tile = document.createElement('div');
-            tile.classList.add('puzzle-tile');
-            tile.dataset.value = tileValue;
-
-            const row = Math.floor(tileValue / this.gridSize);
-            const col = tileValue % this.gridSize;
-            tile.style.backgroundImage = `url('${this.imagePath}')`;
-            tile.style.backgroundSize = `${this.gridSize * 100}% ${this.gridSize * 100}%`;
-            tile.style.backgroundPosition = `-${col * 100}% -${row * 100}%`;
-
-            this.puzzleBoardElement.appendChild(tile);
-        });
-        this.board = Array.from(this.puzzleBoardElement.children);
-    }
-
-    shuffleTiles() {
-        let shuffled = [...this.tiles];
-        for (let i = shuffled.length - 1; i > 0; i--) {
-            const j = Math.floor(Math.random() * (i + 1));
-            [shuffled[i], shuffled[j]] = [shuffled[j], shuffled[i]];
+    
+    getAvailableImage() {
+        const availableImages = this.imagePaths.filter(path => !this.completedPuzzles.has(path));
+        if (availableImages.length === 0) {
+            return null; // Semua puzzle sudah selesai
         }
-        this.tiles = shuffled;
+        const randomIndex = Math.floor(Math.random() * availableImages.length);
+        return availableImages[randomIndex];
     }
 
-    addEventListeners() {
-        this.puzzleBoardElement.addEventListener('click', this.handleTileClick.bind(this));
-    }
+    // Fungsi lainnya tetap sama
+    // ...
+    // ... (Fungsi createTiles, shuffleTiles, swapTiles, handleTileClick, startTimer, stopTimer, updateUI)
+    // ...
 
     handleTileClick(event) {
         const clickedTile = event.target.closest('.puzzle-tile');
-        if (!clickedTile) {
+        if (!clickedTile || !this.isGameActive) {
             return;
         }
 
         if (!this.hasStarted) {
             this.startTimer();
             this.hasStarted = true;
-            this.isGameActive = true;
         }
 
         const clickedIndex = this.board.indexOf(clickedTile);
@@ -112,12 +121,9 @@ class PuzzleGame {
                 return;
             }
 
-            // Tukar posisi di array DOM
             this.swapTiles(this.firstClick.index, this.secondClick.index);
-            // Tukar nilai di array internal (this.tiles)
             [this.tiles[this.firstClick.index], this.tiles[this.secondClick.index]] = [this.tiles[this.secondClick.index], this.tiles[this.firstClick.index]];
 
-            // Hapus seleksi
             this.firstClick.tile.classList.remove('selected');
             this.firstClick = null;
             this.secondClick = null;
@@ -128,7 +134,11 @@ class PuzzleGame {
             if (this.checkWin()) {
                 this.stopTimer();
                 this.isGameActive = false;
-                showPopup(`Selamat! Anda berhasil menyelesaikan puzzle dalam ${formatTime(this.timer)} dengan ${this.moves} gerakan!`, this.level, this.moves, this.timer);
+                this.completedPuzzles.add(this.imagePath); // Tambahkan gambar ke daftar yang sudah selesai
+                this.updateProgress(); // Perbarui progress bar
+                showPopup(`Selamat! Anda berhasil menyelesaikan puzzle dalam ${formatTime(this.timer)} dengan ${this.moves} gerakan!`, this.level, this.moves, this.timer, () => {
+                    this.initGame(); // Muat puzzle berikutnya
+                });
             }
         }
     }
@@ -137,39 +147,49 @@ class PuzzleGame {
     swapTiles(index1, index2) {
         const tile1 = this.board[index1];
         const tile2 = this.board[index2];
-
-        // Tukar posisi di DOM
-        const temp = document.createElement('div');
-        tile1.parentNode.insertBefore(temp, tile1);
-        tile2.parentNode.insertBefore(tile1, tile2);
-        temp.parentNode.insertBefore(tile2, temp);
-        temp.parentNode.removeChild(temp);
-    }
+        const parent = this.puzzleBoardElement;
     
+        const tile1Rect = tile1.getBoundingClientRect();
+        const tile2Rect = tile2.getBoundingClientRect();
+    
+        const distanceX = tile2Rect.left - tile1Rect.left;
+        const distanceY = tile2Rect.top - tile1Rect.top;
+    
+        // Animasi perpindahan
+        const duration = 200; // milliseconds
+        tile1.style.transition = `transform ${duration}ms ease-in-out`;
+        tile2.style.transition = `transform ${duration}ms ease-in-out`;
+        tile1.style.transform = `translate(${distanceX}px, ${distanceY}px)`;
+        tile2.style.transform = `translate(${-distanceX}px, ${-distanceY}px)`;
+    
+        // Tukar di DOM setelah animasi selesai
+        setTimeout(() => {
+            if (parent.children[index1] && parent.children[index2]) {
+                parent.insertBefore(tile2, parent.children[index1]);
+                parent.insertBefore(tile1, parent.children[index2]);
+                
+                // Hapus transisi untuk menghindari masalah di klik berikutnya
+                tile1.style.transition = '';
+                tile2.style.transition = '';
+                tile1.style.transform = '';
+                tile2.style.transform = '';
+            }
+        }, duration);
+    
+        // Tukar posisi di array board
+        [this.board[index1], this.board[index2]] = [this.board[index2], this.board[index1]];
+    }
+
     checkWin() {
         for (let i = 0; i < this.tiles.length; i++) {
-            if (this.tiles[i] !== i) {
+            if (this.board[i].dataset.value !== `${i}`) { // Periksa nilai dataset
                 return false;
             }
         }
         return true;
     }
-
-    startTimer() {
-        this.stopTimer();
-        this.intervalId = setInterval(() => {
-            this.timer++;
-            this.updateUI();
-        }, 1000);
-    }
-
-    stopTimer() {
-        if (this.intervalId) {
-            clearInterval(this.intervalId);
-            this.intervalId = null;
-        }
-    }
-
+    
+    // ... (Fungsi startTimer, stopTimer, updateUI)
     updateUI() {
         if (this.moveCountElement) {
             this.moveCountElement.textContent = this.moves;
@@ -179,15 +199,32 @@ class PuzzleGame {
         }
     }
 
-    async submitScoreAndClosePopup() {
-        const playerNameInput = document.getElementById('player-name');
-        const playerName = playerNameInput ? playerNameInput.value.trim() : 'Anonim';
+    // Fungsi baru untuk memperbarui progress bar
+    updateProgress() {
+        const completedCount = this.completedPuzzles.size;
+        const totalCount = this.imagePaths.length;
+        if (this.progressTextElement) {
+            this.progressTextElement.textContent = `${completedCount}/${totalCount}`;
+        }
+        if (this.progressBarElement) {
+            const percentage = (completedCount / totalCount) * 100;
+            this.progressBarElement.style.width = `${percentage}%`;
+        }
+    }
 
-        if (playerName) {
-            await addScoreToLeaderboard(this.level, playerName, this.moves, this.timer);
-            closePopup();
-        } else {
-            alert('Nama pemain tidak boleh kosong!');
+    // Event listeners baru untuk tombol skip
+    addEventListeners() {
+        if (this.skipButton) {
+            this.skipButton.addEventListener('click', () => this.skipPuzzle());
+        }
+        // Pastikan event listener untuk puzzle board hanya ditambahkan sekali
+        this.puzzleBoardElement.addEventListener('click', this.handleTileClick.bind(this));
+    }
+    
+    // Fungsi untuk melompati puzzle saat ini
+    skipPuzzle() {
+        if (confirm("Anda yakin ingin melewati puzzle ini?")) {
+            this.initGame(); // Muat puzzle baru
         }
     }
 
@@ -197,6 +234,8 @@ class PuzzleGame {
         this.timer = 0;
         this.isGameActive = false;
         this.hasStarted = false;
+        this.completedPuzzles.clear(); // Reset data puzzle yang selesai
+        this.updateProgress();
         this.puzzleBoardElement.innerHTML = '';
         this.initGame();
         this.updateUI();

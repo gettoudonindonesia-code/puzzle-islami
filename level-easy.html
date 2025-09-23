@@ -14,45 +14,41 @@
             <div class="game-info">
                 <p>Gerakan: <span id="move-count">0</span></p>
                 <p>Waktu: <span id="timer">00:00</span></p>
+                <button id="skip-button" class="game-button skip-button">Lewati</button>
                 <button onclick="resetGame()" class="game-button">Ulangi</button>
-                <a href="index.html" class="game-button back-button">Kembali ke Menu</a>
             </div>
+            
+            <div class="progress-container">
+                <p>Kemajuan: <span id="progress-text">0/20</span></p>
+                <div class="progress-bar-bg">
+                    <div id="progress-bar" class="progress-bar"></div>
+                </div>
+            </div>
+
             <div id="puzzle-board" class="puzzle-board easy"></div>
+
+            <a href="index.html" class="game-button back-button">Kembali ke Menu</a>
         </div>
     </div>
 
     <div id="popup" class="popup">
-        <div class="popup-content">
-            <p id="popup-msg"></p>
-            <input type="text" id="player-name" placeholder="Masukkan Nama Anda" maxlength="15" />
-            <button onclick="submitScore()">Simpan Skor</button>
-        </div>
+        <div id="popup-content" class="popup-content">
+            </div>
     </div>
 
     <script src="js/puzzle.js"></script>
     <script src="js/ui.js"></script>
-    <script src="js/leaderboard.js"></script>
     <script>
         let currentGame; // Deklarasikan sebagai variabel global
 
-        document.addEventListener("DOMContentLoaded", async () => {
-            const puzzlesData = await fetch('data/puzzles.json').then(res => res.json());
-            const easyPuzzles = puzzlesData.easy;
-            const randomImageIndex = Math.floor(Math.random() * easyPuzzles.length);
-            const selectedImagePath = easyPuzzles[randomImageIndex].image;
-
-            currentGame = new PuzzleGame("easy", 2, selectedImagePath);
+        document.addEventListener("DOMContentLoaded", () => {
+            // Inisialisasi PuzzleGame dengan level dan ukuran grid yang sesuai
+            currentGame = new PuzzleGame("easy", 2); 
         });
 
         function resetGame() {
             if (currentGame) {
                 currentGame.reset();
-            }
-        }
-
-        function submitScore() {
-            if (currentGame) {
-                currentGame.submitScoreAndClosePopup();
             }
         }
     </script>
