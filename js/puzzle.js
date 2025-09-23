@@ -5,7 +5,6 @@ class PuzzleGame {
         this.imagePath = imagePath;
         this.board = [];
         this.tiles = [];
-        this.emptyTileIndex = numTiles - 1;
         this.moves = 0;
         this.timer = 0;
         this.intervalId = null;
@@ -47,7 +46,6 @@ class PuzzleGame {
 
         const numTiles = this.gridSize * this.gridSize;
         this.tiles = Array.from({ length: numTiles }, (_, i) => i);
-        this.emptyTileIndex = numTiles - 1;
 
         // Shuffle until solvable
         this.shuffleTiles();
