@@ -10,7 +10,7 @@
 <body>
     <div class="game-wrapper">
         <div class="container game-page-container">
-            <h1>Level Sedang (4x4)</h1>
+            <h1>Level Middle (3x3)</h1>
             <div class="game-info">
                 <p>Gerakan: <span id="move-count">0</span></p>
                 <p>Waktu: <span id="timer">00:00</span></p>
@@ -41,7 +41,7 @@
             const randomImageIndex = Math.floor(Math.random() * middlePuzzles.length);
             const selectedImagePath = middlePuzzles[randomImageIndex].image;
 
-            currentGame = new PuzzleGame("middle", 4, selectedImagePath); // gridSize 4x4
+            currentGame = new PuzzleGame("middle", 4, selectedImagePath); // gridSize 3x3
         });
 
         function resetGame() {
