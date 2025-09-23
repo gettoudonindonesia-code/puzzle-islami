@@ -10,7 +10,7 @@
 <body>
     <div class="game-wrapper">
         <div class="container game-page-container">
-            <h1>Level Pro (4x4)</h1>
+            <h1>Pro Level (4x4)</h1>
             <div class="game-info">
                 <p>Gerakan: <span id="move-count">0</span></p>
                 <p>Waktu: <span id="timer">00:00</span></p>
@@ -41,7 +41,7 @@
             const randomImageIndex = Math.floor(Math.random() * proPuzzles.length);
             const selectedImagePath = proPuzzles[randomImageIndex].image;
 
-            currentGame = new PuzzleGame("pro", 6, selectedImagePath); // gridSize 4x4
+            currentGame = new PuzzleGame("pro", 4, selectedImagePath); // gridSize 4x4
         });
 
         function resetGame() {
