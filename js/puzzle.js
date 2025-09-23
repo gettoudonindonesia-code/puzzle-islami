@@ -60,6 +60,7 @@ class PuzzleGame {
         this.imagePath = imageToPlay;
         
         const img = new Image();
+        console.log(this.imagePath);
         img.src = this.imagePath;
         await new Promise(resolve => {
             img.onload = () => {
