@@ -57,23 +57,27 @@ class PuzzleGame {
     }
 
     createTiles(image) {
-        this.puzzleBoardElement.style.gridTemplateColumns = `repeat(${this.gridSize}, 1fr)`;
+    this.puzzleBoardElement.style.gridTemplateColumns = `repeat(${this.gridSize}, 1fr)`;
 
-        this.tiles.forEach((tileValue, index) => {
-            const tile = document.createElement('div');
-            tile.classList.add('puzzle-tile');
-            tile.dataset.value = tileValue;
+    this.tiles.forEach((tileValue, index) => {
+        const tile = document.createElement('div');
+        tile.classList.add('puzzle-tile');
+        tile.dataset.value = tileValue;
 
-                const row = Math.floor(tileValue / this.gridSize);
-                const col = tileValue % this.gridSize;
-                tile.style.backgroundImage = `url('${this.imagePath}')`;
-                tile.style.backgroundSize = `${this.gridSize * 100}% ${this.gridSize * 100}%`;
-                tile.style.backgroundPosition = `-${col * 100}% -${row * 100}%`;
-            }
-            this.puzzleBoardElement.appendChild(tile);
-        });
-        this.board = Array.from(this.puzzleBoardElement.children);
-    }
+        if (tileValue === this.emptyTileIndex) {
+            tile.classList.add('empty-tile');
+            tile.textContent = '';
+        } else {
+            const row = Math.floor(tileValue / this.gridSize);
+            const col = tileValue % this.gridSize;
+            tile.style.backgroundImage = `url('${this.imagePath}')`;
+            tile.style.backgroundSize = `${this.gridSize * 100}% ${this.gridSize * 100}%`;
+            tile.style.backgroundPosition = `-${col * 100}% -${row * 100}%`;
+        }
+        this.puzzleBoardElement.appendChild(tile);
+    });
+    this.board = Array.from(this.puzzleBoardElement.children);
+}
 
     shuffleTiles() {
         let shuffled = [...this.tiles];
