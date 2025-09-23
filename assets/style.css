@@ -203,17 +203,17 @@ p {
 
 /* --- Puzzle Board --- */
 #puzzle-board {
-    display: grid;
-    border: 5px solid var(--primary-color);
-    border-radius: 15px;
-    overflow: hidden;
-    width: min(80vw, 500px); /* Responsif */
-    height: min(80vw, 500px); /* Biar kotak */
-    margin: 0 auto 30px auto;
-    box-shadow: 0 10px 20px var(--shadow-medium), inset 0 0 10px rgba(0, 0, 0, 0.1);
-    position: relative;
-    background-color: var(--tile-bg-color); /* Untuk tile yang kosong */
-    transform-style: preserve-3d; /* Untuk efek 3D parent */
+  display: grid;
+  border: 5px solid var(--primary-color);
+  border-radius: 15px;
+  overflow: hidden;
+  width: 100%;
+  aspect-ratio: 1 / 1;
+  margin: 0 auto 30px auto;
+  box-shadow: 0 10px 20px var(--shadow-medium), inset 0 0 10px rgba(0, 0, 0, 0.1);
+  position: relative;
+  background-color: var(--tile-bg-color);
+  transform-style: preserve-3d;
 }
 
 /* Grid columns berdasarkan level */
