@@ -1,61 +1,8 @@
-// Fungsi utilitas untuk memformat waktu
-function formatTime(seconds) {
-    const minutes = Math.floor(seconds / 60);
-    const remainingSeconds = seconds % 60;
-    const formattedMinutes = String(minutes).padStart(2, '0');
-    const formattedSeconds = String(remainingSeconds).padStart(2, '0');
-    return `${formattedMinutes}:${formattedSeconds}`;
-}
-
-// Fungsi pop-up (asumsi ini ada di file ui.js)
-// Anda harus memastikan fungsi ini ada dan diimpor.
-function showPopup(message, level, moves, timer, callback) {
-    const popup = document.getElementById('popup');
-    const popupContent = document.getElementById('popup-content');
-    
-    // Teks pop-up
-    let content = `
-        <div class="popup-message">${message}</div>
-        <div class="popup-details">
-            <p>Level: ${level.charAt(0).toUpperCase() + level.slice(1)}</p>
-    `;
-    if (moves !== null) {
-        content += `<p>Gerakan: ${moves}</p>`;
-    }
-    if (timer !== null) {
-        content += `<p>Waktu: ${formatTime(timer)}</p>`;
-    }
-    content += `</div>`;
-    
-    // Tombol di dalam pop-up
-    content += `
-        <div class="popup-buttons">
-            <button class="game-button next-button">Lanjut Puzzle</button>
-            <a href="index.html" class="game-button home-button">Kembali ke Menu</a>
-        </div>
-    `;
-    
-    popupContent.innerHTML = content;
-    popup.style.display = 'flex';
-
-    const nextButton = popup.querySelector('.next-button');
-    if (nextButton) {
-        nextButton.addEventListener('click', () => {
-            popup.style.display = 'none';
-            if (callback) {
-                callback();
-            }
-        });
-    }
-}
-
-// Definisikan class PuzzleGame
 class PuzzleGame {
     constructor(level, gridSize) {
         this.level = level;
         this.gridSize = gridSize;
-        this.imagePaths = this.getImagesForLevel(level);
-        this.imageIndex = 0;
+        this.imagePaths = this.getImagesForLevel(level); // Daftar 20 gambar per level
         this.board = [];
         this.tiles = [];
         this.moves = 0;
@@ -65,17 +12,16 @@ class PuzzleGame {
         this.hasStarted = false;
         this.firstClick = null;
         this.secondClick = null;
-        this.completedPuzzles = new Set(JSON.parse(localStorage.getItem(`completedPuzzles_${level}`)) || []);
+        this.completedPuzzles = new Set(JSON.parse(localStorage.getItem(`completedPuzzles_${level}`)) || []); // Memuat dari localStorage
 
-        this.puzzleBoardElement = document.querySelector('.puzzle-container'); // Menggunakan class selector
+        // Pastikan elemen DOM ada sebelum digunakan
+        this.puzzleBoardElement = document.getElementById('puzzle-board');
         this.moveCountElement = document.getElementById('move-count');
         this.timerElement = document.getElementById('timer');
         this.progressTextElement = document.getElementById('progress-text');
         this.progressBarElement = document.getElementById('progress-bar');
-        
-        // Menggunakan selector yang lebih spesifik untuk tombol
-        this.resetButton = document.querySelector('.game-info .game-button');
-        this.skipButton = document.querySelector('.game-controls .game-button');
+        this.skipButton = document.getElementById('skip-button');
+        this.nextButton = document.getElementById('next-button');
 
         this.initGame();
         this.addEventListeners();
@@ -84,7 +30,6 @@ class PuzzleGame {
 
     getImagesForLevel(level) {
         const images = [];
-        // Pastikan nama folder dan ekstensi file sudah benar
         for (let i = 1; i <= 20; i++) {
             images.push(`assets/${level}/${i}.jpg`);
         }
@@ -93,7 +38,7 @@ class PuzzleGame {
 
     async initGame() {
         if (!this.puzzleBoardElement) {
-            console.error("Error: 'puzzle-container' element not found.");
+            console.error("Error: 'puzzle-board' element not found.");
             return;
         }
 
@@ -121,29 +66,32 @@ class PuzzleGame {
         const img = new Image();
         img.src = this.imagePath;
 
-        img.onload = () => {
-            if (img.naturalWidth > 0 && img.naturalHeight > 0) {
-                this.setupTiles();
-            } else {
-                console.error('Failed to load image or image has invalid dimensions:', this.imagePath);
-                this.skipPuzzle();
-            }
-        };
-
-        img.onerror = () => {
-            console.error('Error loading image:', this.imagePath);
+        // Menggunakan Promise untuk menunggu gambar dimuat
+        await new Promise((resolve, reject) => {
+            img.onload = () => {
+                if (img.naturalWidth > 0 && img.naturalHeight > 0) {
+                    resolve();
+                } else {
+                    reject('Image has invalid dimensions');
+                }
+            };
+            img.onerror = () => {
+                reject('Error loading image');
+            };
+        }).catch(error => {
+            console.error(`${error}: ${this.imagePath}`);
+            // Jika gambar gagal, coba puzzle berikutnya
             this.skipPuzzle(); 
-        };
-    }
-    
-    setupTiles() {
+        });
+
         const numTiles = this.gridSize * this.gridSize;
         this.tiles = Array.from({ length: numTiles }, (_, i) => i);
+
         this.shuffleTiles();
         this.createTiles();
         this.isGameActive = true;
     }
-
+    
     getAvailableImage() {
         const shuffledImagePaths = [...this.imagePaths].sort(() => Math.random() - 0.5);
         
@@ -163,7 +111,7 @@ class PuzzleGame {
             const tile = document.createElement('div');
             tile.classList.add('puzzle-tile');
             tile.dataset.value = tileValue;
-            
+
             const row = Math.floor(tileValue / this.gridSize);
             const col = tileValue % this.gridSize;
             
@@ -177,19 +125,16 @@ class PuzzleGame {
     }
 
     shuffleTiles() {
-        let tiles = this.tiles;
-        let isSolvable = false;
-
-        // Loop sampai kita mendapatkan puzzle yang bisa dipecahkan
+        let shuffled = [...this.tiles];
+        // Pastikan puzzle dapat dipecahkan
         do {
-            for (let i = tiles.length - 1; i > 0; i--) {
+            for (let i = shuffled.length - 1; i > 0; i--) {
                 const j = Math.floor(Math.random() * (i + 1));
-                [tiles[i], tiles[j]] = [tiles[j], tiles[i]];
+                [shuffled[i], shuffled[j]] = [shuffled[j], shuffled[i]];
             }
-            isSolvable = this.isSolvable(tiles);
-        } while (!isSolvable);
-
-        this.tiles = tiles;
+        } while (!this.isSolvable(shuffled));
+        
+        this.tiles = shuffled;
     }
 
     isSolvable(tiles) {
@@ -205,13 +150,12 @@ class PuzzleGame {
     }
 
     addEventListeners() {
-        if (this.resetButton) {
-            this.resetButton.addEventListener('click', () => this.reset());
-        }
         if (this.skipButton) {
             this.skipButton.addEventListener('click', () => this.skipPuzzle());
         }
-        
+        if (this.nextButton) {
+            this.nextButton.addEventListener('click', () => this.skipPuzzle());
+        }
         this.puzzleBoardElement.addEventListener('click', this.handleTileClick.bind(this));
     }
 
@@ -344,26 +288,25 @@ class PuzzleGame {
     }
 
     skipPuzzle() {
-        this.initGame(); 
+        this.initGame();
     }
 
     reset() {
         this.moves = 0;
         this.timer = 0;
-        this.isGameActive = true;
+        this.isGameActive = false;
         this.hasStarted = false;
         this.firstClick = null;
         this.secondClick = null;
         this.stopTimer();
         
-        this.shuffleTiles(); 
-        this.renderTiles(); 
+        // Reset hanya mengacak ubin, tidak memuat gambar baru
+        const numTiles = this.gridSize * this.gridSize;
+        this.tiles = Array.from({ length: numTiles }, (_, i) => i);
+        this.shuffleTiles();
+        this.createTiles();
         
         this.updateUI();
-    }
-    
-    renderTiles() {
-        this.puzzleBoardElement.innerHTML = '';
-        this.createTiles();
+        this.isGameActive = true;
     }
 }
