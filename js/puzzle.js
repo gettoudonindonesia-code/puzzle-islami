@@ -120,17 +120,16 @@ class PuzzleGame {
     }
 
     shuffleTiles() {
-        let shuffled = [...this.tiles];
-        // Pastikan puzzle dapat dipecahkan
-        do {
-            for (let i = shuffled.length - 1; i > 0; i--) {
-                const j = Math.floor(Math.random() * (i + 1));
-                [shuffled[i], shuffled[j]] = [shuffled[j], shuffled[i]];
-            }
-        } while (!this.isSolvable(shuffled));
-        
-        this.tiles = shuffled;
+        // Dapatkan array tile puzzle Anda (this.tiles)
+        let tiles = this.tiles;
+
+        // Lakukan pengacakan menggunakan algoritma Fisher-Yates
+        for (let i = tiles.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        [tiles[i], tiles[j]] = [tiles[j], tiles[i]];
     }
+
+    this.tiles = tiles;
 
     // Fungsi untuk memeriksa apakah puzzle dapat dipecahkan (untuk NxN grid)
     isSolvable(tiles) {
@@ -300,13 +299,15 @@ class PuzzleGame {
     }
 
     reset() {
-        this.stopTimer();
-        this.moves = 0;
-        this.timer = 0;
-        this.isGameActive = false;
-        this.hasStarted = false;
-        // Tidak perlu clear completedPuzzles di sini, hanya saat semua level selesai
-        this.initGame();
-        this.updateUI();
+    this.moveCount = 0;
+    this.timer = 0;
+    this.isSolved = false;
+    this.moves = [];
+    
+    // Panggil fungsi untuk mengacak puzzle saja
+    this.shuffleTiles(); 
+
+    // Perbarui tampilan UI
+    this.updateUI();
     }
 }

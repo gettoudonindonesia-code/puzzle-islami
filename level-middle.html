@@ -9,14 +9,17 @@
 </head>
 <body>
     <div class="game-wrapper">
-        <div class="container game-page-container">
-            <h1>Middle Level (3x3)</h1>
+    <div class="container game-page-container">
+        <h1>Easy Level (2x2)
             <div class="game-info">
-                <p>Gerakan: <span id="move-count">0</span></p>
-                <p>Waktu: <span id="timer">00:00</span></p>
-                <button id="skip-button" class="game-button skip-button">Lewati</button>
+                <a href="index.html" class="game-button back-button">Home</a> 
                 <button onclick="resetGame()" class="game-button">Ulangi</button>
             </div>
+        </h1>
+        <p>Gerakan: <span id="move-count">0</span></p>
+        <p>Waktu: <span id="timer">00:00</span></p>
+    </div>
+</div>
             
             <div class="progress-container">
                 <p>Kemajuan: <span id="progress-text">0/20</span></p>
@@ -24,15 +27,7 @@
                     <div id="progress-bar" class="progress-bar"></div>
                 </div>
             </div>
-
-            <div id="puzzle-board" class="puzzle-board middle"></div>
-
-            <button id="next-button" class="game-button next-puzzle-button">Lanjut Puzzle</button>
-
-            <a href="index.html" class="game-button back-button">Kembali ke Menu</a>
-        </div>
-    </div>
-
+            
     <div id="popup" class="popup">
         <div id="popup-content" class="popup-content">
             </div>
