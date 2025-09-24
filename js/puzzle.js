@@ -1,8 +1,20 @@
+// puzzle.js
+
+// Pastikan fungsi showPopup didefinisikan di ui.js atau file lain yang dimuat sebelum ini.
+// Fungsi utilitas untuk memformat waktu
+function formatTime(seconds) {
+    const minutes = Math.floor(seconds / 60);
+    const remainingSeconds = seconds % 60;
+    const formattedMinutes = String(minutes).padStart(2, '0');
+    const formattedSeconds = String(remainingSeconds).padStart(2, '0');
+    return `${formattedMinutes}:${formattedSeconds}`;
+}
+
 class PuzzleGame {
     constructor(level, gridSize) {
         this.level = level;
         this.gridSize = gridSize;
-        this.imagePaths = this.getImagesForLevel(level); // Daftar 20 gambar per level
+        this.imagePaths = this.getImagesForLevel(level);
         this.board = [];
         this.tiles = [];
         this.moves = 0;
@@ -12,9 +24,8 @@ class PuzzleGame {
         this.hasStarted = false;
         this.firstClick = null;
         this.secondClick = null;
-        this.completedPuzzles = new Set(JSON.parse(localStorage.getItem(`completedPuzzles_${level}`)) || []); // Memuat dari localStorage
+        this.completedPuzzles = new Set(JSON.parse(localStorage.getItem(`completedPuzzles_${level}`)) || []);
 
-        // Pastikan elemen DOM ada sebelum digunakan
         this.puzzleBoardElement = document.getElementById('puzzle-board');
         this.moveCountElement = document.getElementById('move-count');
         this.timerElement = document.getElementById('timer');
@@ -22,6 +33,7 @@ class PuzzleGame {
         this.progressBarElement = document.getElementById('progress-bar');
         this.skipButton = document.getElementById('skip-button');
         this.nextButton = document.getElementById('next-button');
+        this.resetButton = document.querySelector('.game-info .game-button');
 
         this.initGame();
         this.addEventListeners();
@@ -66,7 +78,6 @@ class PuzzleGame {
         const img = new Image();
         img.src = this.imagePath;
 
-        // Menggunakan Promise untuk menunggu gambar dimuat
         await new Promise((resolve, reject) => {
             img.onload = () => {
                 if (img.naturalWidth > 0 && img.naturalHeight > 0) {
@@ -80,7 +91,6 @@ class PuzzleGame {
             };
         }).catch(error => {
             console.error(`${error}: ${this.imagePath}`);
-            // Jika gambar gagal, coba puzzle berikutnya
             this.skipPuzzle(); 
         });
 
@@ -126,7 +136,6 @@ class PuzzleGame {
 
     shuffleTiles() {
         let shuffled = [...this.tiles];
-        // Pastikan puzzle dapat dipecahkan
         do {
             for (let i = shuffled.length - 1; i > 0; i--) {
                 const j = Math.floor(Math.random() * (i + 1));
@@ -150,11 +159,15 @@ class PuzzleGame {
     }
 
     addEventListeners() {
+        // Pengecekan null dilakukan di sini untuk mencegah TypeError
         if (this.skipButton) {
             this.skipButton.addEventListener('click', () => this.skipPuzzle());
         }
         if (this.nextButton) {
             this.nextButton.addEventListener('click', () => this.skipPuzzle());
+        }
+        if (this.resetButton) {
+            this.resetButton.addEventListener('click', () => this.reset());
         }
         this.puzzleBoardElement.addEventListener('click', this.handleTileClick.bind(this));
     }
@@ -300,7 +313,6 @@ class PuzzleGame {
         this.secondClick = null;
         this.stopTimer();
         
-        // Reset hanya mengacak ubin, tidak memuat gambar baru
         const numTiles = this.gridSize * this.gridSize;
         this.tiles = Array.from({ length: numTiles }, (_, i) => i);
         this.shuffleTiles();
