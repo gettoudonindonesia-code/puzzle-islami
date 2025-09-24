@@ -1,67 +1,60 @@
 <!DOCTYPE html>
 <html lang="id">
 <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-    <title>Puzzle Islami - Pro</title>
-    <link rel="stylesheet" href="assets/style.css"/>
-    <link href="https://fonts.googleapis.com/css2?family=Amatic+SC:wght@400;700&family=Comfortaa:wght@400;700&display=swap" rel="stylesheet">
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title>Puzzle Islami - Pro</title>
+    <link rel="stylesheet" href="assets/style.css"/>
+    <link href="https://fonts.googleapis.com/css2?family=Amatic+SC:wght@400;700&family=Comfortaa:wght@400;700&display=swap" rel="stylesheet">
 </head>
 <body>
-    <div class="game-wrapper">
-    <div class="container game-page-container">
-        <h1>Pro Level (4x4)
-            <div class="game-info">
-                <a href="index.html" class="game-button back-button">Home</a> 
-                <button onclick="resetGame()" class="game-button">Ulangi</button>
-            </div>
-        </h1>
-        <p>Gerakan: <span id="move-count">0</span></p>
-        <p>Waktu: <span id="timer">00:00</span></p>
-    </div>
-</div>
-            
-            <div class="progress-container">
-                <p>Kemajuan: <span id="progress-text">0/20</span></p>
-                <div class="progress-bar-bg">
-                    <div id="progress-bar" class="progress-bar"></div>
-                </div>
-            </div>
+    <div class="game-wrapper">
+        <div class="container game-page-container">
+            <h1>Pro Level (4x4)</h1>
+            <div class="game-info">
+                <p>Gerakan: <span id="move-count">0</span></p>
+                <p>Waktu: <span id="timer">00:00</span></p>
+                <button id="skip-button" class="game-button skip-button">Lewati</button>
+                <button onclick="resetGame()" class="game-button">Ulangi</button>
+            </div>
+            
+            <div class="progress-container">
+                <p>Kemajuan: <span id="progress-text">0/20</span></p>
+                <div class="progress-bar-bg">
+                    <div id="progress-bar" class="progress-bar"></div>
+                </div>
+            </div>
 
-                <div id="popup" class="popup">
-        <div id="popup-content" class="popup-content">
-            </div>
-    </div>
+            <div id="puzzle-board" class="puzzle-board pro"></div>
 
-    <div class="puzzle-container">
+            <button id="next-button" class="game-button next-puzzle-button">Lanjut Puzzle</button>
+
+            <a href="index.html" class="game-button back-button">Kembali ke Menu</a>
         </div>
-    
-    <div class="game-controls">
-        <button onclick="skipPuzzle()" class="game-button">Lewati</button>
     </div>
 
-    <script src="js/leaderboard.js"></script>
-    <script src="js/ui.js"></script>
-    <script src="js/puzzle.js"></script>
-    <script>
-        let currentGame;
+    <div id="popup" class="popup">
+        <div id="popup-content" class="popup-content">
+            </div>
+    </div>
 
-        document.addEventListener("DOMContentLoaded", () => {
-            currentGame = new PuzzleGame("pro", 4);
-        });
+    <script src="js/leaderboard.js"></script>
+    <script src="js/ui.js"></script>
+    <script src="js/puzzle.js"></script>
+    <script>
+        let currentGame;
 
-        function resetGame() {
-            if (currentGame) {
-                currentGame.reset();
-            }
-        }
+        document.addEventListener("DOMContentLoaded", () => {
+            currentGame = new PuzzleGame("pro", 4);
+        });
 
-        // Tambahkan fungsi untuk tombol "Lewati" di sini
-        function skipPuzzle() {
+        function resetGame() {
             if (currentGame) {
-                currentGame.skipPuzzle();
+                currentGame.reset();
             }
         }
-    </script>
+        // Fungsi skipPuzzle() di file puzzle.js sudah memiliki logika yang cukup,
+        // jadi tidak perlu ada fungsi terpisah di sini.
+    </script>
 </body>
 </html>
