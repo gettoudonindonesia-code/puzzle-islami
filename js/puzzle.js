@@ -291,12 +291,17 @@ class PuzzleGame {
     }
 
     skipPuzzle() {
-        if (this.isGameActive && confirm("Anda yakin ingin melewati puzzle ini?")) {
-            this.initGame();
-        } else if (!this.isGameActive) { // Jika game belum aktif (misal setelah menang)
-            this.initGame();
-        }
-    }
+    // Memeriksa apakah game sedang aktif.
+    if (this.isGameActive) {
+        // Langsung inisialisasi game berikutnya tanpa konfirmasi.
+        this.initGame(); 
+    } 
+    // Bagian 'else if' di bawah ini juga bisa disederhanakan 
+    // karena initGame() akan tetap dipanggil di akhir.
+    // else if (!this.isGameActive) {
+    //     this.initGame();
+    // }
+}
 
     reset() {
     this.moveCount = 0;

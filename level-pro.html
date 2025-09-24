@@ -1,53 +1,67 @@
 <!DOCTYPE html>
 <html lang="id">
 <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-    <title>Puzzle Islami - Pro</title>
-    <link rel="stylesheet" href="assets/style.css"/>
-    <link href="https://fonts.googleapis.com/css2?family=Amatic+SC:wght@400;700&family=Comfortaa:wght@400;700&display=swap" rel="stylesheet">
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title>Puzzle Islami - Pro</title>
+    <link rel="stylesheet" href="assets/style.css"/>
+    <link href="https://fonts.googleapis.com/css2?family=Amatic+SC:wght@400;700&family=Comfortaa:wght@400;700&display=swap" rel="stylesheet">
 </head>
 <body>
-    <div class="game-wrapper">
-    <div class="container game-page-container">
-        <h1>Easy Level (2x2)
-            <div class="game-info">
-                <a href="index.html" class="game-button back-button">Home</a> 
-                <button onclick="resetGame()" class="game-button">Ulangi</button>
-            </div>
-        </h1>
-        <p>Gerakan: <span id="move-count">0</span></p>
-        <p>Waktu: <span id="timer">00:00</span></p>
-    </div>
+    <div class="game-wrapper">
+    <div class="container game-page-container">
+        <h1>Pro Level (4x4)
+            <div class="game-info">
+                <a href="index.html" class="game-button back-button">Home</a> 
+                <button onclick="resetGame()" class="game-button">Ulangi</button>
+            </div>
+        </h1>
+        <p>Gerakan: <span id="move-count">0</span></p>
+        <p>Waktu: <span id="timer">00:00</span></p>
+    </div>
 </div>
-            
-            <div class="progress-container">
-                <p>Kemajuan: <span id="progress-text">0/20</span></p>
-                <div class="progress-bar-bg">
-                    <div id="progress-bar" class="progress-bar"></div>
-                </div>
-            </div>
+            
+            <div class="progress-container">
+                <p>Kemajuan: <span id="progress-text">0/20</span></p>
+                <div class="progress-bar-bg">
+                    <div id="progress-bar" class="progress-bar"></div>
+                </div>
+            </div>
 
-                <div id="popup" class="popup">
-        <div id="popup-content" class="popup-content">
-            </div>
+                <div id="popup" class="popup">
+        <div id="popup-content" class="popup-content">
+            </div>
+    </div>
+
+    <div class="puzzle-container">
+        </div>
+    
+    <div class="game-controls">
+        <button onclick="skipPuzzle()" class="game-button">Lewati</button>
     </div>
 
-    <script src="js/leaderboard.js"></script>
-    <script src="js/ui.js"></script>
-    <script src="js/puzzle.js"></script>
-    <script>
-        let currentGame;
+    <script src="js/leaderboard.js"></script>
+    <script src="js/ui.js"></script>
+    <script src="js/puzzle.js"></script>
+    <script>
+        let currentGame;
 
-        document.addEventListener("DOMContentLoaded", () => {
-            currentGame = new PuzzleGame("pro", 4);
-        });
+        document.addEventListener("DOMContentLoaded", () => {
+            currentGame = new PuzzleGame("pro", 4);
+        });
 
-        function resetGame() {
+        function resetGame() {
+            if (currentGame) {
+                currentGame.reset();
+            }
+        }
+
+        // Tambahkan fungsi untuk tombol "Lewati" di sini
+        function skipPuzzle() {
             if (currentGame) {
-                currentGame.reset();
+                currentGame.skipPuzzle();
             }
         }
-    </script>
+    </script>
 </body>
 </html>

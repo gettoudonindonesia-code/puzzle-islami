@@ -32,8 +32,16 @@
         <div id="popup-content" class="popup-content">
             </div>
     </div>
+    
+    <div class="puzzle-container">
+        </div>
+    <div class="game-controls">
+        <button onclick="skipPuzzle()" class="game-button">Lewati</button>
+    </div>
 
-    <script src="js/leaderboard.js"></script> <script src="js/ui.js"></script>
+
+    <script src="js/leaderboard.js"></script>
+    <script src="js/ui.js"></script>
     <script src="js/puzzle.js"></script>
     <script>
         let currentGame; // Deklarasikan sebagai variabel global
@@ -48,9 +56,13 @@
                 currentGame.reset();
             }
         }
-
-        // Fungsi submitScore tidak lagi diperlukan di sini karena ditangani di ui.js
-        // function submitScore() { ... }
+        
+        // Tambahkan fungsi untuk tombol "Lewati" di sini
+        function skipPuzzle() {
+            if (currentGame) {
+                currentGame.skipPuzzle();
+            }
+        }
     </script>
 </body>
 </html>
