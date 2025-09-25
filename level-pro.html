@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-    <title>Puzzle Islami - Pro</title>
+    <title>Pro Level (4x4) - Puzzle Islami</title>
     <link rel="stylesheet" href="assets/style.css"/>
     <link href="https://fonts.googleapis.com/css2?family=Amatic+SC:wght@400;700&family=Comfortaa:wght@400;700&display=swap" rel="stylesheet">
 </head>
@@ -14,46 +14,50 @@
             <div class="game-info">
                 <p>Gerakan: <span id="move-count">0</span></p>
                 <p>Waktu: <span id="timer">00:00</span></p>
-                <button id="skip-button" class="game-button skip-button">Lewati</button>
             </div>
             
             <div class="progress-container">
-                <p>Kemajuan: <span id="progress-text">0/20</span></p>
+                <p>Kemajuan: <span id="progress-text">0/16</span></p>
                 <div class="progress-bar-bg">
                     <div id="progress-bar" class="progress-bar"></div>
                 </div>
             </div>
 
-            <div id="puzzle-board" class="puzzle-board pro"></div>
-
-            <button id="next-button" class="game-button next-puzzle-button">Lanjut Puzzle</button>
-
-            <a href="index.html" class="game-button back-button">Kembali ke Menu</a>
+            <div id="puzzle-board" class="puzzle-container pro"></div>
+            
+            <div class="game-controls">
+                <button id="skip-button" class="game-button">Lewati</button>
+                <button id="shuffle-button" class="game-button">Ulangi</button>
+            </div>
+            
+            <div class="game-actions">
+                <a href="index.html" class="game-button back-button">Kembali ke Menu</a>
+            </div>
         </div>
     </div>
-
+    
     <div id="popup" class="popup">
-        <div id="popup-content" class="popup-content">
-            </div>
+        <div id="popup-content" class="popup-content"></div>
     </div>
-
+    
     <script src="js/leaderboard.js"></script>
     <script src="js/ui.js"></script>
     <script src="js/puzzle.js"></script>
     <script>
-        let currentGame;
-
         document.addEventListener("DOMContentLoaded", () => {
-            currentGame = new PuzzleGame("pro", 4);
-        });
+            const level = "pro";
+            const gridSize = 4; 
+            const currentGame = new PuzzleGame(level, gridSize);
+            
+            document.getElementById('skip-button').addEventListener('click', () => {
+                currentGame.skipPuzzle();
+            });
 
-        function resetGame() {
-            if (currentGame) {
-                currentGame.reset();
-            }
-        }
-        // Fungsi skipPuzzle() di file puzzle.js sudah memiliki logika yang cukup,
-        // jadi tidak perlu ada fungsi terpisah di sini.
+            // Tambahkan event listener untuk tombol Ulangi
+            document.getElementById('shuffle-button').addEventListener('click', () => {
+                currentGame.shuffle();
+            });
+        });
     </script>
 </body>
 </html>

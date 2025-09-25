@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-    <title>Puzzle Islami - Easy</title>
+    <title>Easy Level (2x2) - Puzzle Islami</title>
     <link rel="stylesheet" href="assets/style.css"/>
     <link href="https://fonts.googleapis.com/css2?family=Amatic+SC:wght@400;700&family=Comfortaa:wght@400;700&display=swap" rel="stylesheet">
 </head>
@@ -17,16 +17,17 @@
             </div>
             
             <div class="progress-container">
-                <p>Kemajuan: <span id="progress-text">0/20</span></p>
+                <p>Kemajuan: <span id="progress-text">0/4</span></p>
                 <div class="progress-bar-bg">
                     <div id="progress-bar" class="progress-bar"></div>
                 </div>
             </div>
 
-            <div id="puzzle-board" class="puzzle-container"></div>
+            <div id="puzzle-board" class="puzzle-container easy"></div>
             
             <div class="game-controls">
                 <button id="skip-button" class="game-button">Lewati</button>
+                <button id="shuffle-button" class="game-button">Ulangi</button>
             </div>
             
             <div class="game-actions">
@@ -48,13 +49,13 @@
             const gridSize = 2; // Untuk Easy Level
             const currentGame = new PuzzleGame(level, gridSize);
             
-            // Event listeners dipindahkan ke sini atau ke dalam class PuzzleGame
-            document.getElementById('reset-button').addEventListener('click', () => {
-                currentGame.reset();
-            });
-
             document.getElementById('skip-button').addEventListener('click', () => {
                 currentGame.skipPuzzle();
+            });
+
+            // Tambahkan event listener untuk tombol Ulangi
+            document.getElementById('shuffle-button').addEventListener('click', () => {
+                currentGame.shuffle();
             });
         });
     </script>

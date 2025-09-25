@@ -32,6 +32,7 @@ class PuzzleGame {
         this.progressTextElement = document.getElementById('progress-text');
         this.progressBarElement = document.getElementById('progress-bar');
         this.skipButton = document.getElementById('skip-button');
+        this.shuffleButton = document.getElementById('shuffle-button'); // Tambahkan referensi tombol shuffle
         this.nextButton = document.getElementById('next-button');
 
         this.initGame();
@@ -158,9 +159,11 @@ class PuzzleGame {
     }
 
     addEventListeners() {
-        // Pengecekan null dilakukan di sini untuk mencegah TypeError
         if (this.skipButton) {
             this.skipButton.addEventListener('click', () => this.skipPuzzle());
+        }
+        if (this.shuffleButton) { // Tambahkan pengecekan dan listener untuk tombol shuffle
+            this.shuffleButton.addEventListener('click', () => this.shuffle());
         }
         if (this.nextButton) {
             this.nextButton.addEventListener('click', () => this.skipPuzzle());
@@ -300,4 +303,26 @@ class PuzzleGame {
         this.initGame();
     }
 
+    // Fungsi baru untuk mengacak ulang gambar yang sedang dimainkan
+    shuffle() {
+        this.stopTimer();
+        this.isGameActive = false;
+        this.hasStarted = false;
+        
+        // Hapus ubin yang ada di papan
+        this.puzzleBoardElement.innerHTML = '';
+        
+        // Acak ulang susunan ubin
+        this.shuffleTiles();
+        
+        // Buat kembali ubin dengan susunan baru
+        this.createTiles();
+
+        // Reset hitungan gerakan dan timer
+        this.moves = 0;
+        this.timer = 0;
+        this.updateUI();
+
+        this.isGameActive = true;
+    }
 }
