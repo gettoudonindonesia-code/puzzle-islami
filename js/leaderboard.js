@@ -1,87 +1,80 @@
-// Key for localStorage
-const LEADERBOARD_KEY = 'puzzleLeaderboard';
-
-// Function to add a new score to the leaderboard
-async function addScoreToLeaderboard(level, playerName, moves, time) {
-    const newScore = {
-        name: playerName,
-        moves: moves,
-        time: time,
-        date: new Date().toISOString()
-    };
-
-    let leaderboard = getLeaderboard(level);
-
-    leaderboard.push(newScore);
-    
-    // Sort scores based on a composite key: fewer moves, then less time
-    leaderboard.sort((a, b) => {
-        if (a.moves !== b.moves) {
-            return a.moves - b.moves;
-        }
-        return a.time - b.time;
-    });
-
-    saveLeaderboard(level, leaderboard.slice(0, 10)); // Keep only top 10 scores
-}
-
-// Function to get leaderboard data from localStorage
-function getLeaderboard(level) {
+// Function to get the best scores from localStorage
+function getBestScores() {
     try {
-        const key = `${LEADERBOARD_KEY}-${level}`;
-        const data = localStorage.getItem(key);
-        return data ? JSON.parse(data) : [];
+        const scores = localStorage.getItem('bestScores');
+        return scores ? JSON.parse(scores) : {};
     } catch (e) {
-        console.error("Failed to retrieve leaderboard from localStorage", e);
-        return [];
+        console.error("Failed to retrieve best scores from localStorage", e);
+        return {};
     }
 }
 
-// Function to save leaderboard data to localStorage
-function saveLeaderboard(level, data) {
+// Function to save the best scores to localStorage
+function saveBestScores(data) {
     try {
-        const key = `${LEADERBOARD_KEY}-${level}`;
-        localStorage.setItem(key, JSON.stringify(data));
+        localStorage.setItem('bestScores', JSON.stringify(data));
     } catch (e) {
-        console.error("Failed to save leaderboard to localStorage", e);
+        console.error("Failed to save best scores to localStorage", e);
     }
 }
 
-// Function to display the leaderboard on the main page
+// Function to display the simplified leaderboard
 function displayLeaderboard() {
     const leaderboardContainer = document.getElementById('leaderboard');
-    if (!leaderboardContainer) {
-        return; // Exit if not on a page with a leaderboard container
-    }
+    if (!leaderboardContainer) return; // Exit if the element doesn't exist
 
-    const levels = ['easy', 'middle', 'pro'];
-    let htmlContent = '';
+    const bestScores = getBestScores();
+    leaderboardContainer.innerHTML = ''; // Clear existing content
+
+    const levels = [
+        { id: 'easy', name: 'Level Easy (2x2)' },
+        { id: 'middle', name: 'Level Middle (3x3)' },
+        { id: 'pro', name: 'Level Pro (4x4)' },
+        { id: 'super', name: 'Level Super (5x5)' }
+    ];
 
     levels.forEach(level => {
-        const scores = getLeaderboard(level);
-        htmlContent += `<h3>Level ${level.charAt(0).toUpperCase() + level.slice(1)}</h3>`;
-        
-        if (scores.length === 0) {
-            htmlContent += '<p>Belum ada skor yang tercatat.</p>';
-        } else {
-            htmlContent += `
-                <ol>
-                    ${scores.map(score => `
-                        <li>
-                            <span>${score.name}</span>
-                            <span>(${score.moves} gerakan)</span>
-                            <span>- ${formatTime(score.time)}</span>
-                        </li>
-                    `).join('')}
-                </ol>
+        const bestScore = bestScores[level.id];
+        const leaderboardItem = document.createElement('div');
+        leaderboardItem.className = 'leaderboard-item';
+
+        let scoreContent = `
+            <h3>${level.name}</h3>
+            <p>Belum ada top skor.</p>
+        `;
+
+        if (bestScore) {
+            scoreContent = `
+                <h3>${level.name}</h3>
+                <p>Top Skor: <strong>${bestScore.moves}</strong> Gerakan</p>
             `;
         }
-    });
 
-    leaderboardContainer.innerHTML = htmlContent;
+        leaderboardItem.innerHTML = scoreContent;
+        leaderboardContainer.appendChild(leaderboardItem);
+    });
 }
 
-// Run this function when the document is loaded to display the leaderboard
+// Function to reset all best scores
+function resetLeaderboard() {
+    if (confirm("Apakah Anda yakin ingin menghapus semua top skor?")) {
+        localStorage.removeItem('bestScores');
+        displayLeaderboard(); // Update the display after clearing
+        alert("Semua top skor telah dihapus!");
+    }
+}
+
+// Ensure functions are globally accessible
+window.displayLeaderboard = displayLeaderboard;
+window.resetLeaderboard = resetLeaderboard;
+
+// Run on page load
 document.addEventListener("DOMContentLoaded", () => {
     displayLeaderboard();
+
+    // Add event listener to the reset button
+    const resetButton = document.getElementById('reset-leaderboard-button');
+    if (resetButton) {
+        resetButton.addEventListener('click', resetLeaderboard);
+    }
 });
