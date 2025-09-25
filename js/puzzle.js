@@ -33,7 +33,6 @@ class PuzzleGame {
         this.progressBarElement = document.getElementById('progress-bar');
         this.skipButton = document.getElementById('skip-button');
         this.nextButton = document.getElementById('next-button');
-        this.resetButton = document.querySelector('.game-info .game-button');
 
         this.initGame();
         this.addEventListeners();
@@ -165,9 +164,6 @@ class PuzzleGame {
         }
         if (this.nextButton) {
             this.nextButton.addEventListener('click', () => this.skipPuzzle());
-        }
-        if (this.resetButton) {
-            this.resetButton.addEventListener('click', () => this.reset());
         }
         this.puzzleBoardElement.addEventListener('click', this.handleTileClick.bind(this));
     }
@@ -304,21 +300,4 @@ class PuzzleGame {
         this.initGame();
     }
 
-    reset() {
-        this.moves = 0;
-        this.timer = 0;
-        this.isGameActive = false;
-        this.hasStarted = false;
-        this.firstClick = null;
-        this.secondClick = null;
-        this.stopTimer();
-        
-        const numTiles = this.gridSize * this.gridSize;
-        this.tiles = Array.from({ length: numTiles }, (_, i) => i);
-        this.shuffleTiles();
-        this.createTiles();
-        
-        this.updateUI();
-        this.isGameActive = true;
-    }
 }
