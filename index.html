@@ -11,22 +11,47 @@
     <div class="container menu-container">
         <h1>✨ Puzzle Islami ✨</h1>
         <p class="tagline">Uji ketangkasanmu dengan puzzle-puzzle seru!</p>
-        <div class="menu">
-            <a href="level-easy.html" class="menu-button">Level easy (2x2)</a>
-            <a href="level-middle.html" class="menu-button">Level middle (3x3)</a>
-            <a href="level-pro.html" class="menu-button">Level pro (4x4)</a>
+        
+        <div class="level-selection-container">
+            <a href="level-easy.html" class="level-button easy">
+                <img src="assets/thumbnails/easy-thumb.jpg" alt="Level Easy" class="level-thumbnail">
+                <span>Level Easy (2x2)</span>
+            </a>
+            <a href="level-middle.html" class="level-button middle">
+                <img src="assets/thumbnails/middle-thumb.jpg" alt="Level Middle" class="level-thumbnail">
+                <span>Level Middle (3x3)</span>
+            </a>
+            <a href="level-pro.html" class="level-button pro">
+                <img src="assets/thumbnails/pro-thumb.jpg" alt="Level Pro" class="level-thumbnail">
+                <span>Level Pro (4x4)</span>
+            </a>
+            <a href="level-super.html" class="level-button super">
+                <img src="assets/thumbnails/super-thumb.jpg" alt="Level Super" class="level-thumbnail">
+                <span>Level Super (5x5)</span>
+            </a>
         </div>
 
         <h2>🏆 Leaderboard Teratas 🏆</h2>
-        <div id="leaderboard">
+        <div id="leaderboard" class="leaderboard-grid">
             <p>Memuat leaderboard...</p>
+        </div>
+        
+        <div class="leaderboard-actions">
+            <button id="reset-leaderboard-button" class="game-button">Reset Top Skor</button>
         </div>
     </div>
 
     <script src="js/leaderboard.js"></script>
     <script>
-        // Memuat leaderboard saat halaman dimuat
-        document.addEventListener("DOMContentLoaded", displayLeaderboard);
+        document.addEventListener("DOMContentLoaded", () => {
+            displayLeaderboard();
+            
+            // Tambahkan event listener untuk tombol reset
+            const resetButton = document.getElementById('reset-leaderboard-button');
+            if (resetButton) {
+                resetButton.addEventListener('click', resetLeaderboard);
+            }
+        });
     </script>
 </body>
 </html>
